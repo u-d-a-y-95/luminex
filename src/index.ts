@@ -1,6 +1,6 @@
-import { FireFly } from "./fireFly";
+import { FireFly } from "./core";
 
-const fireFly = new FireFly();
-Object.freeze(fireFly);
-
-export { fireFly };
+export const createFireFly = <T>() => {
+  const fireFly = new FireFly<T>();
+  return Object.freeze(fireFly);
+};
