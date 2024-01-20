@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "build:dev": "tsc",
     "build": "tsc",
     "test": "ts-node ./example/index.ts"
   },

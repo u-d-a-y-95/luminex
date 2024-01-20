@@ -1,7 +1,7 @@
-import { createFireFly } from "../src";
+import { born } from "../src";
 import { TopicStruct } from "./event.type";
 
-const fireFly = createFireFly<TopicStruct>();
+const fireFly = born<TopicStruct>();
 const a = fireFly.glow("SHOW", (data) => {
   console.log(data.body.name);
 });
