@@ -17,7 +17,6 @@ export class FireFly<T> {
     iterationType: iterationType
   ): Instinct<K> {
     if (!(topic in this.events)) {
-      //@ts-expect-error: type checking
       this.events[topic] = {};
     }
     const key = getUniquekey();
@@ -28,7 +27,7 @@ export class FireFly<T> {
       iteration: iterationType,
     };
 
-    //@ts-expect-error: type checking
+    // @ts-expect-error: type error
     this.events[topic][key] = {
       ...res,
       cb: onMessage,
@@ -37,44 +36,49 @@ export class FireFly<T> {
     return res;
   }
 
-  // private removeListner(instinct: Instinct) {
-  //   delete this.events[instinct.topicName][instinct.key];
-  // }
+  private removeListner<K extends keyof T>(instinct: Instinct<K>) {
+    const hub = this.events[instinct.topicName];
+    if (!hub) return;
+    delete hub[instinct.key];
+  }
 
-  public glow<K extends keyof T>(topic: K, onMessage: T[K]): void {
+  public glow<K extends keyof T>(
+    topic: K,
+    onMessage: GlowCB<K, T>
+  ): Instinct<K> {
     return this.addListner(topic, onMessage, "repeat");
   }
 
-  // public blink<T extends Topics>(topic: T, onMessage: GlowCB<T>) {
-  //   return this.addListner(topic, onMessage, "once");
-  // }
+  public blink<K extends keyof T>(topic: K, onMessage: GlowCB<K, T>) {
+    return this.addListner(topic, onMessage, "once");
+  }
 
-  // public kill(instinct: Instinct) {
-  //   this.removeListner(instinct);
-  // }
+  public kill<K extends keyof T>(instinct: Instinct<K>) {
+    this.removeListner(instinct);
+  }
 
-  // public reborn() {
-  //   this.events = {};
-  // }
+  public reborn() {
+    // Remove all events
+    for (const topic in this.events) {
+      delete this.events[topic];
+    }
+  }
 
-  // public fly<T extends Topics>(
-  //   topic: T,
-  //   message: { body: TopicStruct[T] }
-  // ): void {
-  //   const time = new Date().getTime();
-  //   const hub = this.events[topic];
-  //   if (hub) {
-  //     const response: returnGlowCB<T> = {
-  //       releaseTime: time,
-  //       topicName: topic,
-  //       body: message.body,
-  //     };
-  //     Object.values(hub).forEach((listner) => {
-  //       listner.cb(response);
-  //       if (listner.iteration === "once") {
-  //         this.removeListner(listner);
-  //       }
-  //     });
-  //   }
-  // }
+  public fly<K extends keyof T>(topic: K, message: T[K]): void {
+    const time = new Date().getTime();
+    const hub = this.events[topic];
+    if (hub) {
+      const response: returnGlowCB<K, T> = {
+        releaseTime: time,
+        topicName: topic,
+        body: message,
+      };
+      Object.values(hub).forEach((listner) => {
+        listner.cb(response);
+        if (listner.iteration === "once") {
+          this.removeListner(listner);
+        }
+      });
+    }
+  }
 }

@@ -16,10 +16,10 @@ export type Instinct<K> = {
   iteration: iterationType;
 };
 
-export type Event<T> =
-  | {
-      [K in keyof T]?: {
-        [Key: string]: Instinct<keyof T> & { cb: GlowCB<keyof T, T> };
-      };
-    }
-  | object;
+type Listner<K extends keyof T, T> = Instinct<K> & { cb: GlowCB<K, T> };
+
+export type Event<T> = {
+  [K in keyof T]?: {
+    [Key: string]: Listner<K, T>;
+  };
+};
