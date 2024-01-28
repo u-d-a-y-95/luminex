@@ -45,23 +45,23 @@ luminex.reset();
 
 # API
 
-## `createLuminex<T>(): Luminex<T>`
+### `createLuminex<T>(): Luminex<T>`
 
 A function responsible for creating instances of the Luminex event emitter.
 
-## `on<T>(eventName: string, callback: (data: T) => void): () => void`
+### `on<T>(eventName: string, callback: (data: T) => void): () => void`
 
 Subscribe to an event and receive callbacks whenever the event is emitted. Returns a function to unsubscribe.
 
-## `emit<T>(eventName: string, data: T): void`
+### `emit<T>(eventName: string, data: T): void`
 
 Emit an event with the specified data.
 
-## `off(eventName: string, callback: () => void): void`
+### `off(eventName: string, callback: () => void): void`
 
 Unsubscribe from an event using the callback function obtained from the `on` method.
 
-## `reset(): void`
+### `reset(): void`
 
 Remove all event subscriptions.
 
