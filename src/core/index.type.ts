@@ -14,6 +14,7 @@ export type Instinct<K> = {
   key: string;
   topicName: K;
   iteration: iterationType;
+  kill: () => void;
 };
 
 type Listner<K extends keyof T, T> = Instinct<K> & { cb: GlowCB<K, T> };

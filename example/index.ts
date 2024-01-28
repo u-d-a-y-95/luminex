@@ -1,10 +1,14 @@
 import { born } from "../src";
 import { TopicStruct } from "./event.type";
 
-const fireFly = born<TopicStruct>();
-const a = fireFly.glow("SHOW", (data) => {
-  console.log(data.body.name);
+const firefly = born<TopicStruct>();
+const a = firefly.glow("SHOW", (data) => {
+  console.log("from a", data);
 });
-fireFly.fly("SHOW", { name: "uday" });
-fireFly.reborn();
-fireFly.fly("SHOW", { name: "uday" });
+const b = firefly.blink("SHOW", (data) => {
+  console.log(data);
+});
+firefly.fly("SHOW", { name: "uday" });
+
+a.kill();
+firefly.fly("SHOW", { name: "uday" });

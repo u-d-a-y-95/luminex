@@ -8,7 +8,7 @@ import {
 
 const getUniquekey = () => Date.now() + (Math.random() * 100000).toFixed();
 
-export class FireFly<T> {
+export class Firefly<T> {
   private events: Event<T> = {};
 
   private addListner<K extends keyof T>(
@@ -25,6 +25,9 @@ export class FireFly<T> {
       key,
       topicName: topic,
       iteration: iterationType,
+      kill: () => {
+        this.removeListner(topic, key);
+      },
     };
 
     // @ts-expect-error: type error
@@ -36,10 +39,10 @@ export class FireFly<T> {
     return res;
   }
 
-  private removeListner<K extends keyof T>(instinct: Instinct<K>) {
-    const hub = this.events[instinct.topicName];
+  private removeListner<K extends keyof T>(topicName: K, key: string) {
+    const hub = this.events[topicName];
     if (!hub) return;
-    delete hub[instinct.key];
+    delete hub[key];
   }
 
   public glow<K extends keyof T>(
@@ -54,7 +57,7 @@ export class FireFly<T> {
   }
 
   public kill<K extends keyof T>(instinct: Instinct<K>) {
-    this.removeListner(instinct);
+    this.removeListner(instinct.topicName, instinct.key);
   }
 
   public reborn() {
@@ -76,7 +79,7 @@ export class FireFly<T> {
       Object.values(hub).forEach((listner) => {
         listner.cb(response);
         if (listner.iteration === "once") {
-          this.removeListner(listner);
+          this.removeListner(listner.topicName, listner.key);
         }
       });
     }
