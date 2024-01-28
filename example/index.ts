@@ -9,6 +9,6 @@ const b = firefly.blink("SHOW", (data) => {
   console.log(data);
 });
 firefly.fly("SHOW", { name: "uday" });
-
+console.log(a);
 a.kill();
 firefly.fly("SHOW", { name: "uday" });

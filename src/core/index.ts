@@ -1,19 +1,14 @@
-import {
-  Event,
-  GlowCB,
-  Instinct,
-  returnGlowCB,
-  iterationType,
-} from "./index.type";
+import { Event, CB, Instinct, Data, iterationType } from "./index.type";
+import { v4 as uuid } from "uuid";
 
-const getUniquekey = () => Date.now() + (Math.random() * 100000).toFixed();
+const getUniquekey = () => uuid().split("-").join("");
 
 export class Firefly<T> {
   private events: Event<T> = {};
 
   private addListner<K extends keyof T>(
     topic: K,
-    onMessage: GlowCB<K, T>,
+    onMessage: CB<K, T>,
     iterationType: iterationType
   ): Instinct<K> {
     if (!(topic in this.events)) {
@@ -45,14 +40,11 @@ export class Firefly<T> {
     delete hub[key];
   }
 
-  public glow<K extends keyof T>(
-    topic: K,
-    onMessage: GlowCB<K, T>
-  ): Instinct<K> {
+  public glow<K extends keyof T>(topic: K, onMessage: CB<K, T>): Instinct<K> {
     return this.addListner(topic, onMessage, "repeat");
   }
 
-  public blink<K extends keyof T>(topic: K, onMessage: GlowCB<K, T>) {
+  public blink<K extends keyof T>(topic: K, onMessage: CB<K, T>) {
     return this.addListner(topic, onMessage, "once");
   }
 
@@ -71,7 +63,7 @@ export class Firefly<T> {
     const time = new Date().getTime();
     const hub = this.events[topic];
     if (hub) {
-      const response: returnGlowCB<K, T> = {
+      const response: Data<K, T> = {
         releaseTime: time,
         topicName: topic,
         body: message,
