@@ -1,77 +1,79 @@
-import { Event, CB, Ray, Data, iterationType } from "./index.type";
+import { Event, CB, Ray, Data, EventType } from "./index.type";
 import { v4 as uuid } from "uuid";
 
-const getUniquekey = () => uuid().split("-").join("");
+const getUniqueKey = () => uuid().split("-").join("");
 
 export class Luminex<T> {
-  private events: Event<T> = {};
+  private events: Event<T> = new Map();
 
-  private addListner<K extends keyof T>(
+  private addListener<K extends keyof T>(
     topic: K,
     onMessage: CB<K, T>,
-    iterationType: iterationType
+    eventType: EventType
   ): Ray<K> {
-    if (!(topic in this.events)) {
-      this.events[topic] = {};
+    if (!this.events.has(topic)) {
+      this.events.set(topic, new Map());
     }
-    const key = getUniquekey();
+
+    const key = getUniqueKey();
 
     const res = {
       key,
       topicName: topic,
-      iteration: iterationType,
+      eventType,
       off: () => {
-        this.removeListner(topic, key);
+        this.removeListener(topic, key);
       },
+      cb: onMessage as CB<keyof T, T>,
     };
 
-    // @ts-expect-error: type error
-    this.events[topic][key] = {
-      ...res,
-      cb: onMessage,
-    };
+    const event = this.events.get(topic);
+
+    event?.set(key, res);
 
     return res;
   }
 
-  private removeListner<K extends keyof T>(topicName: K, key: string) {
-    const hub = this.events[topicName];
+  private removeListener<K extends keyof T>(topicName: K, key: string): void {
+    const hub = this.events.get(topicName);
+
     if (!hub) return;
-    delete hub[key];
+
+    hub.delete(key);
   }
 
   public on<K extends keyof T>(topic: K, onMessage: CB<K, T>): Ray<K> {
-    return this.addListner(topic, onMessage, "repeat");
+    return this.addListener(topic, onMessage, EventType.REPEAT);
   }
 
-  public once<K extends keyof T>(topic: K, onMessage: CB<K, T>) {
-    return this.addListner(topic, onMessage, "once");
+  public once<K extends keyof T>(topic: K, onMessage: CB<K, T>): Ray<K> {
+    return this.addListener(topic, onMessage, EventType.ONCE);
   }
 
   public off<K extends keyof T>(instinct: Ray<K>) {
-    this.removeListner(instinct.topicName, instinct.key);
+    this.removeListener(instinct.topicName, instinct.key);
   }
 
-  public reset() {
-    // Remove all events
-    for (const topic in this.events) {
-      delete this.events[topic];
-    }
+  public reset(): void {
+    this.events.clear();
   }
 
   public emit<K extends keyof T>(topic: K, message: T[K]): void {
     const time = new Date().getTime();
-    const hub = this.events[topic];
+    const hub = this.events.get(topic);
+
     if (hub) {
       const response: Data<K, T> = {
         releaseTime: time,
         topicName: topic,
         body: message,
       };
-      Object.values(hub).forEach((listner) => {
-        listner.cb(response);
-        if (listner.iteration === "once")
-          this.removeListner(listner.topicName, listner.key);
+
+      hub.forEach((listener) => {
+        listener.cb(response);
+        if (listener.eventType === EventType.ONCE) {
+          this.removeListener(listener.topicName, listener.key);
+        }
       });
     }
   }

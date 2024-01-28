@@ -1,4 +1,7 @@
-export type iterationType = "once" | "repeat";
+export enum EventType {
+  ONCE = "once",
+  REPEAT = "repeat",
+}
 
 export type Data<K extends keyof T, T> = {
   releaseTime: number;
@@ -11,14 +14,10 @@ export type CB<K extends keyof T, T> = (message: Data<K, T>) => void;
 export type Ray<K> = {
   key: string;
   topicName: K;
-  iteration: iterationType;
+  eventType: EventType;
   off: () => void;
 };
 
 type Listner<K extends keyof T, T> = Ray<K> & { cb: CB<K, T> };
 
-export type Event<T> = {
-  [K in keyof T]?: {
-    [Key: string]: Listner<K, T>;
-  };
-};
+export type Event<T> = Map<keyof T, Map<string, Listner<keyof T, T>>>;
