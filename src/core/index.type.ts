@@ -8,14 +8,14 @@ export type Data<K extends keyof T, T> = {
 
 export type CB<K extends keyof T, T> = (message: Data<K, T>) => void;
 
-export type Instinct<K> = {
+export type Ray<K> = {
   key: string;
   topicName: K;
   iteration: iterationType;
-  kill: () => void;
+  off: () => void;
 };
 
-type Listner<K extends keyof T, T> = Instinct<K> & { cb: CB<K, T> };
+type Listner<K extends keyof T, T> = Ray<K> & { cb: CB<K, T> };
 
 export type Event<T> = {
   [K in keyof T]?: {

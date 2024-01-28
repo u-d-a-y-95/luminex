@@ -1,16 +1,16 @@
-import { Event, CB, Instinct, Data, iterationType } from "./index.type";
+import { Event, CB, Ray, Data, iterationType } from "./index.type";
 import { v4 as uuid } from "uuid";
 
 const getUniquekey = () => uuid().split("-").join("");
 
-export class Firefly<T> {
+export class Luminex<T> {
   private events: Event<T> = {};
 
   private addListner<K extends keyof T>(
     topic: K,
     onMessage: CB<K, T>,
     iterationType: iterationType
-  ): Instinct<K> {
+  ): Ray<K> {
     if (!(topic in this.events)) {
       this.events[topic] = {};
     }
@@ -20,7 +20,7 @@ export class Firefly<T> {
       key,
       topicName: topic,
       iteration: iterationType,
-      kill: () => {
+      off: () => {
         this.removeListner(topic, key);
       },
     };
@@ -40,26 +40,26 @@ export class Firefly<T> {
     delete hub[key];
   }
 
-  public glow<K extends keyof T>(topic: K, onMessage: CB<K, T>): Instinct<K> {
+  public on<K extends keyof T>(topic: K, onMessage: CB<K, T>): Ray<K> {
     return this.addListner(topic, onMessage, "repeat");
   }
 
-  public blink<K extends keyof T>(topic: K, onMessage: CB<K, T>) {
+  public once<K extends keyof T>(topic: K, onMessage: CB<K, T>) {
     return this.addListner(topic, onMessage, "once");
   }
 
-  public kill<K extends keyof T>(instinct: Instinct<K>) {
+  public off<K extends keyof T>(instinct: Ray<K>) {
     this.removeListner(instinct.topicName, instinct.key);
   }
 
-  public reborn() {
+  public reset() {
     // Remove all events
     for (const topic in this.events) {
       delete this.events[topic];
     }
   }
 
-  public fly<K extends keyof T>(topic: K, message: T[K]): void {
+  public emit<K extends keyof T>(topic: K, message: T[K]): void {
     const time = new Date().getTime();
     const hub = this.events[topic];
     if (hub) {
@@ -70,9 +70,8 @@ export class Firefly<T> {
       };
       Object.values(hub).forEach((listner) => {
         listner.cb(response);
-        if (listner.iteration === "once") {
+        if (listner.iteration === "once")
           this.removeListner(listner.topicName, listner.key);
-        }
       });
     }
   }
