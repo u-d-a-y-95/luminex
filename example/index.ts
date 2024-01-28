@@ -1,14 +1,22 @@
-import { born } from "../src";
-import { TopicStruct } from "./event.type";
+import { createLuminex } from "../src";
 
-const firefly = born<TopicStruct>();
-const a = firefly.glow("SHOW", (data) => {
-  console.log("from a", data);
+type Event = {
+  SHOW: { name: string };
+};
+const luminex = createLuminex<Event>();
+
+// Subscribe to an event
+const ray = luminex.on("SHOW", (data) => {
+  console.log("Event received:", data);
 });
-const b = firefly.blink("SHOW", (data) => {
-  console.log(data);
+
+// Emit an event
+luminex.emit("SHOW", {
+  name: "Hello Luminex",
 });
-firefly.fly("SHOW", { name: "uday" });
-console.log(a);
-a.kill();
-firefly.fly("SHOW", { name: "uday" });
+
+// Unsubscribe from an event
+luminex.off("SHOW", ray);
+
+// Reset and remove all event subscriptions
+luminex.reset();

@@ -2,13 +2,13 @@
 
 Luminex is a lightweight, type-safe event emitter library that seamlessly works in both browser and Node.js environments.
 
-## Features
+### Features
 
 - 🌐 Cross-platform: Works in both browser and Node.js environments.
 - 🧪 Type-safe: Utilizes TypeScript to ensure type safety for your events.
 - 🚀 Simple API: Offers intuitive methods for common event emitter actions.
 
-## Installation
+### Installation
 
 Install Luminex using npm:
 
@@ -16,54 +16,51 @@ Install Luminex using npm:
 npm install luminex
 ```
 
-# Usage
+## Usage
 
-## Creating Luminex Instances
+#### Creating Luminex Instances
 
 ```typescript
-import { createLuminex, Luminex } from "luminex";
+import { createLuminex } from "luminex";
+
+type Events = {
+  SHOW: { message: string };
+};
 
 // Create an instance of Luminex using the createLuminex function
-const luminex: Luminex<MyEventData> = createLuminex();
-
-// Subscribe to an event
-const onEvent = luminex.on("eventName", (data) => {
-  console.log("Event received:", data);
-});
-
-// Emit an event
-luminex.emit("eventName", {
-  /* your data */
-});
-
-// Unsubscribe from an event
-luminex.off("eventName", onEvent);
-
-// Reset and remove all event subscriptions
-luminex.reset();
+const luminex = createLuminex<Events>();
 ```
 
-# API
+#### Subscribe
 
-### `createLuminex<T>(): Luminex<T>`
+```typescript
+// Subscribe to an event
+// "Hello Luminex"
+const ray = luminex.on("SHOW", (data) => {
+  console.log(data.body);
+});
+```
 
-A function responsible for creating instances of the Luminex event emitter.
+#### Emit
 
-### `on<T>(eventName: string, callback: (data: T) => void): () => void`
+```typescript
+// Emit an event
+luminex.emit("SHOW", {
+  message: "Hello Luminex",
+});
+```
 
-Subscribe to an event and receive callbacks whenever the event is emitted. Returns a function to unsubscribe.
+## API
 
-### `emit<T>(eventName: string, data: T): void`
+#### Methods
 
-Emit an event with the specified data.
-
-### `off(eventName: string, callback: () => void): void`
-
-Unsubscribe from an event using the callback function obtained from the `on` method.
-
-### `reset(): void`
-
-Remove all event subscriptions.
+| Method  | Arguments                           | Description                                                                                                         |
+| ------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `on`    | `type: string`, `handler: function` | Binds the handler function to the specified type event.                                                             |
+| `once`  | `type: string`, `handler: function` | Binds the handler function to the specified type event and unbinds it after one execution.                          |
+| `off`   | `type: instance of event binder     | Unbinds the handler function from the specified type event                                                          |
+| `emit`  | `type: string`, `...data arguments` | Calls all handler functions bound to the specified type event. It passes all `...data arguments` to those handlers. |
+| `reset` |                                     | Removes all events of any and all types, including `*`.                                                             |
 
 # License
 
