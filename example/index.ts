@@ -16,7 +16,7 @@ luminex.emit("SHOW", {
 });
 
 // Unsubscribe from an event
-luminex.off("SHOW", ray);
+luminex.off(ray);
 
 // Reset and remove all event subscriptions
 luminex.reset();
