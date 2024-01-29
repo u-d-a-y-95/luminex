@@ -1,4 +1,4 @@
-import { Event, CB, Ray, Data, EventType } from "./index.type";
+import { Event, CB, Ray, Data, IterationType } from "./index.type";
 import { v4 as uuid } from "uuid";
 
 const getUniqueKey = () => uuid().split("-").join("");
@@ -9,7 +9,7 @@ export class Luminex<T> {
   private addListener<K extends keyof T>(
     topic: K,
     onMessage: CB<K, T>,
-    eventType: EventType
+    iterationType: IterationType
   ): Ray<K> {
     if (!this.events.has(topic)) {
       this.events.set(topic, new Map());
@@ -20,7 +20,7 @@ export class Luminex<T> {
     const res = {
       key,
       topicName: topic,
-      eventType,
+      iterationType,
       off: () => {
         this.removeListener(topic, key);
       },
@@ -43,11 +43,11 @@ export class Luminex<T> {
   }
 
   public on<K extends keyof T>(topic: K, onMessage: CB<K, T>): Ray<K> {
-    return this.addListener(topic, onMessage, EventType.REPEAT);
+    return this.addListener(topic, onMessage, IterationType.REPEAT);
   }
 
   public once<K extends keyof T>(topic: K, onMessage: CB<K, T>): Ray<K> {
-    return this.addListener(topic, onMessage, EventType.ONCE);
+    return this.addListener(topic, onMessage, IterationType.ONCE);
   }
 
   public off<K extends keyof T>(instinct: Ray<K>) {
@@ -71,7 +71,7 @@ export class Luminex<T> {
 
       hub.forEach((listener) => {
         listener.cb(response);
-        if (listener.eventType === EventType.ONCE) {
+        if (listener.iterationType === IterationType.ONCE) {
           this.removeListener(listener.topicName, listener.key);
         }
       });

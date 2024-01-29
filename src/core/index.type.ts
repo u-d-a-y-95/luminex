@@ -1,4 +1,4 @@
-export enum EventType {
+export enum IterationType {
   ONCE = "once",
   REPEAT = "repeat",
 }
@@ -14,7 +14,7 @@ export type CB<K extends keyof T, T> = (message: Data<K, T>) => void;
 export type Ray<K> = {
   key: string;
   topicName: K;
-  eventType: EventType;
+  iterationType: IterationType;
   off: () => void;
 };
 
