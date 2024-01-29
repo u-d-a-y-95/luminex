@@ -1,7 +1,7 @@
 import { Event, CB, Ray, Data, IterationType } from "./index.type";
-import { v4 as uuid } from "uuid";
+import { generateUUID } from "../utils";
 
-const getUniqueKey = () => uuid().split("-").join("");
+const getUniquekey = () => generateUUID().split("-").join("");
 
 export class Luminex<T> {
   private events: Event<T> = new Map();
@@ -15,7 +15,7 @@ export class Luminex<T> {
       this.events.set(topic, new Map());
     }
 
-    const key = getUniqueKey();
+    const key = getUniquekey();
 
     const res = {
       key,
