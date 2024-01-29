@@ -12,11 +12,7 @@
   "author": "uday <uday.dev.bd@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@types/uuid": "^9.0.8",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
-  },
-  "dependencies": {
-    "uuid": "^9.0.1"
   }
 }
