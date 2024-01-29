@@ -7,11 +7,16 @@
   "scripts": {
     "build:dev": "tsc",
     "build": "tsc",
-    "test": "ts-node ./example/index.ts"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "author": "uday <uday.dev.bd@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.11",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }
